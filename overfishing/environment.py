@@ -129,10 +129,13 @@ class Game():
 
     def record_to_csv(self, evaluation_metrics, communication_mode):
         self.record_each(communication_mode)
+        # Checking if the file exists
         if (os.path.exists("results.csv")):
             df = pd.read_csv("results.csv")
         else:
             df = pd.DataFrame({})
+
+        # Concat results
         new_df = pd.DataFrame(evaluation_metrics)
         new_df['communication'] = {True: "YES", False: "NO"}[
             communication_mode == True]
