@@ -128,6 +128,7 @@ class Game():
         new_df.to_csv("results1.csv")
 
     def record_to_csv(self, evaluation_metrics, communication_mode):
+        self.record_each(communication_mode)
         if (os.path.exists("results.csv")):
             df = pd.read_csv("results.csv")
         else:
