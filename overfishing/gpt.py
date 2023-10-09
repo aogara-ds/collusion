@@ -4,11 +4,7 @@ from dotenv import load_dotenv
 from transformers import GPT2Tokenizer
 from transformers.utils import logging
 import time
-import random
-import re
-import math
 import numpy as np
-import pdb
 
 
 class GPT():
@@ -137,21 +133,10 @@ class GPT():
                         votes = {k: 1 for k in option_dict.keys()}
 
             else:
-                # Get the correct string to describe the model
-                model_dict = {
-                    "ada": "text-ada-001",
-                    "babbage": "text-babbage-001",
-                    "curie": "text-curie-001",
-                    "davinci-001": "text-davinci-001",
-                    "davinci-002": "text-davinci-002",
-                    "3.5": "gpt-3.5-turbo",
-                    "4": "gpt-4-0314"
-                }
-                model_string = model_dict[model]
 
                 # Get logprobs
                 logprobs = openai.Completion.create(
-                    model="text-davinci-002",
+                    model="text-ada-001",
                     prompt=self.tokenize(prompt),
                     temperature=self.temperature,
                     max_tokens=max_tokens,

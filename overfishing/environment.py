@@ -11,6 +11,7 @@ import os
 class Game():
     fishes_cum = [0]
     currently_killed_people = []
+    records = []
 
     def __init__(self, discussion=True):
         print("Initialized game.")
@@ -72,7 +73,7 @@ class Game():
                     player.get_action(action_prompts)
                     current_action = player.actions[-1]
 
-                    if "Kill" in current_action and player.communicate_with!=current_action[5:]:
+                    if "Kill" in current_action and player.communicate_with != current_action[5:]:
                         # Identify the relevant parties
                         killed_player_name = current_action[5:]
                         killed_player = [
@@ -82,6 +83,13 @@ class Game():
                     else:
                         player.fishes += player.catch_rate
                         fishes_count += player.catch_rate
+
+            temp_dict = {}
+            for player in self.players:
+                temp_dict[player.name] = player.fishes
+
+            # Records Update
+            self.records.append(temp_dict)
             self.fishes_cum.append(fishes_count+self.fishes_cum[-1])
 
         for player in self.players:
@@ -109,11 +117,25 @@ class Game():
         print(self.fishes_cum)
         return evaluation_metrics
 
+    def record_each(self, communication_mode):
+        if (os.path.exists("results1.csv")):
+            df = pd.read_csv("results1.csv")
+        else:
+            df = pd.DataFrame({})
+        # new_df = pd.DataFrame(self.players)
+        new_df['communication'] = {True: "YES", False: "NO"}
+        new_df = pd.concat([df, new_df])
+        new_df.to_csv("results1.csv")
+
     def record_to_csv(self, evaluation_metrics, communication_mode):
+        self.record_each(communication_mode)
+        # Checking if the file exists
         if (os.path.exists("results.csv")):
             df = pd.read_csv("results.csv")
         else:
             df = pd.DataFrame({})
+
+        # Concat results
         new_df = pd.DataFrame(evaluation_metrics)
         new_df['communication'] = {True: "YES", False: "NO"}[
             communication_mode == True]
