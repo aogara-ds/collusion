@@ -12,6 +12,8 @@ class Game():
     fishes_cum = [0]
     currently_killed_people = []
     records = []
+    rounds_dict = {}
+    allies = {"Charlie": "Adam", "Adam": "Charlie", "Bob": "Bob"}
 
     def __init__(self, discussion=True):
         print("Initialized game.")
@@ -26,6 +28,10 @@ class Game():
         """
         # Initialize list of players
         self.players = players
+
+        # Initializing the rounds dict
+        for player in self.players:
+            self.rounds_dict[player.name] = 0
 
         # Randomly generate bots
         if bots > 0:
@@ -53,13 +59,16 @@ class Game():
         return [p for p in self.players if p.isBanished == False]
 
     def play(self):
-        for i in range(100):
+        n_rounds = 10
+        for i in range(n_rounds):
             print(i)
             if (i % 10 == 0):
                 print(i, " round completed")
             fishes_count = 0
+            actions_dict = {}
             for player in self.players:
                 if (player.name in self.currently_killed_people):
+                    self.rounds_dict[player.name] += 1
                     player.coolDownPeriod -= 1
 
                 if (player.coolDownPeriod == 0):
@@ -72,6 +81,7 @@ class Game():
                         player, self.prompts['action'])
                     player.get_action(action_prompts)
                     current_action = player.actions[-1]
+                    actions_dict[player.name] = current_action
 
                     if "Kill" in current_action and player.communicate_with != current_action[5:]:
                         # Identify the relevant parties
@@ -84,12 +94,22 @@ class Game():
                         player.fishes += player.catch_rate
                         fishes_count += player.catch_rate
 
-            temp_dict = {}
+            temp_dict_ar = []
             for player in self.players:
-                temp_dict[player.name] = player.fishes
+                temp_dict = {}
+                temp_dict["name"] = player.name
+                temp_dict["fishes"] = player.fishes
+                temp_dict["# round in water"] = self.rounds_dict[player.name]
+                try:
+                    temp_dict["action"] = actions_dict[player.name]
+                except:
+                    temp_dict["action"] = "banished"
+                temp_dict['round_no'] = str(i)
+                temp_dict_ar.append(temp_dict)
 
             # Records Update
-            self.records.append(temp_dict)
+            self.records += temp_dict_ar
+            # self.records.append(temp_dict_arr)
             self.fishes_cum.append(fishes_count+self.fishes_cum[-1])
 
         for player in self.players:
@@ -113,19 +133,20 @@ class Game():
         # self.endgame()
         evaluation_metrics = [p.eval for p in self.players]
         print(evaluation_metrics)
-        self.record_to_csv(evaluation_metrics, communication_mode=True)
+        self.record_to_csv(evaluation_metrics, communication_mode=False)
         print(self.fishes_cum)
         return evaluation_metrics
 
     def record_each(self, communication_mode):
-        if (os.path.exists("results1.csv")):
-            df = pd.read_csv("results1.csv")
+        if (os.path.exists("results_n_rounds.csv")):
+            df = pd.read_csv("results_n_rounds.csv")
         else:
             df = pd.DataFrame({})
-        # new_df = pd.DataFrame(self.players)
-        new_df['communication'] = {True: "YES", False: "NO"}
+        new_df = pd.DataFrame(self.records)
+        new_df['communication'] = {True: "YES", False: "NO"}[
+            communication_mode == True]
         new_df = pd.concat([df, new_df])
-        new_df.to_csv("results1.csv")
+        new_df.to_csv("results_n_rounds.csv")
 
     def record_to_csv(self, evaluation_metrics, communication_mode):
         self.record_each(communication_mode)
@@ -184,15 +205,15 @@ class Game():
 
         identity = """You are a fisherman and there are {num_opponents_minus_one} other fellow fishermen. All you need to do is collect as much as fish possible in your pace.\n\n"""
 
-        action = """Turn #{next_turn_num}
-        Other Players status: {opponents_status}
-        Possible Actions:{possible_actions}\n
-        Which action would you like to take? Respond with a number from the list.
-        Your Action:\n"""
         # action = """Turn #{next_turn_num}
+        # Other Players status: {opponents_status}
         # Possible Actions:{possible_actions}\n
         # Which action would you like to take? Respond with a number from the list.
         # Your Action:\n"""
+        action = """Turn #{next_turn_num}
+        Possible Actions:{possible_actions}\n
+        Which action would you like to take? Respond with a number from the list.
+        Your Action:\n"""
 
         turn = """Turn #{turn_num}
         Your Action: {turn_action}\n\n{state_update}"""
@@ -212,7 +233,8 @@ class Game():
         actions = ["Fish for this Round"]
         # If the player is the killer, allow them to kill opponents in their location
         players = self.get_active_players()
-        players = list(filter(lambda x: x.isBanished == False, players))
+        players = list(filter(lambda x: x.isBanished ==
+                       False and x.name != player.name, players))
         actions.extend(
             ["Kill " + o.name for o in players])
 
