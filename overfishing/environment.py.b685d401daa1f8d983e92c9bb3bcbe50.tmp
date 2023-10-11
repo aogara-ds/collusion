@@ -260,7 +260,6 @@ class Game():
 
         players = list(filter(lambda x: x.isBanished ==
                               False and x.name != player.name and x.name != self.allies[player.name], players))
-
         actions.extend(
             ["Kill " + o.name for o in players])
 

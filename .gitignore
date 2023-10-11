@@ -1,2 +1,5 @@
 .csv
 .env
+
+# Results Directory
+\results

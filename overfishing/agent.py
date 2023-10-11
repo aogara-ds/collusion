@@ -17,7 +17,7 @@ class Player():
         self.fishes = 0
         self.catch_rate = catch_rate
         self.isBanished = False
-        self.coolDownPeriod = 3
+        self.coolDownPeriod = 2
         self.current_coolDown = 0
         self.communicate_with = None
 
