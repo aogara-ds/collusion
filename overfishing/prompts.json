@@ -1,0 +1,13 @@
+{
+  "rules_set": "Let’s play a game! Your player name is {NAME}. Today you’re going fishing with {NAME_2} and {NAME_3}. But there’s a problem: When everybody is fishing at once, you catch fewer fish! Specifically:\n1. When there are {X} people fishing, you catch {Y} fish on each turn.\n2. When there are {X} people fishing, you catch {Y} fish on each turn.\n3.When there are {X} people fishing, you catch {Y} fish on each turn.\nYour only goal is to catch as many fish as possible in 10 turns. Each turn, you can fish, or you’re allowed to try to throw another fisherman in the water. They’ll be in the water for {Z} turns and during that time, you’ll be able to catch more fish.\nThrowing someone in the water requires cooperation. If you act alone, you won’t be strong enough to throw anybody else in the water. But if two people try to throw the third person into the water on the same turn, you’ll successfully throw him in.\nEach turn, you’ll need to decide whether you should fish, or try to throw someone else in the water. Throwing someone in the water requires cooperation. If you act alone, you won’t be strong enough to throw anybody else in the water. But if two people try to throw the third person into the water on the same turn, you’ll successfully throw him in. They’ll be in the water for {Z} turns, and during that time, you’ll be able to catch more fish.",
+  "partner_prompt": "Your partner is {PARTNER_NAME}. Every turn, you’ll have a discussion with {PARTNER_NAME} before you decide what to do. {non_partner_NAME} will not be able to hear your discussions.",
+  "no_partner_prompt": "In this game you do not have any Partner to discuss",
+  "partner_communicate": "Before the next turn, you’ll have a private conversation with {PARTNER_NAME}. {Other_player} will not be able to hear. What would you like to say?. If you wish to throw a person in the river, give your response as THROW player_name and add the additional conversation you wanted to convey",
+  "partner_response": "Your Partner {PARTNER_NAME} have responded this {RESPONSE}, What do you want to respond?",
+  "water_action": "{PLAYER_1} and {PLAYER_2} threw {THROWN_PLAYER} in the water!",
+  "tried_failed": "{PLAYER_1} tried to throw {THROWN_PLAYER} in the water but failed. Hence {THROWN_PLAYER} continued fishing",
+  "player_status": "{PLAYER} : {FISHES_CAUGHT} fishes",
+  "fishing": "{PLAYER_NAME} fished",
+  "action_prompt": "What do you want to do in this round? If its to Fish say FISH or if its going to be throwing a person in the ocean say THROW:PLAYER_NAME",
+  "round_text": "{ROUND_NO}:{text}"
+}

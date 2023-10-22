@@ -3,7 +3,7 @@ import re
 
 
 class Player():
-    def __init__(self, name, catch_rate, agent, communicate_with):
+    def __init__(self, name, catch_rate, agent, communicate_with=None, cool_down_period=2):
         """
         Initializes a player with the given name and identity. 
         """
@@ -17,9 +17,10 @@ class Player():
         self.fishes = 0
         self.catch_rate = catch_rate
         self.isBanished = False
-        self.coolDownPeriod = 2
+        self.coolDownPeriod = cool_down_period
         self.current_coolDown = 0
         self.communicate_with = None
+        self.partner = communicate_with
 
         # Set agent and potentially model
         if "gpt" in agent:
