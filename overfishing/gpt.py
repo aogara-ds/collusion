@@ -167,13 +167,13 @@ class GPT():
         while len(self.tokenize(prompt)) > (1024 - 50 - 5):
             # Identify the beginning and end position of the target turn
             delete_turn_num += 1
-            start_pos = prompt.find(f"Turn #{delete_turn_num}")
-            end_pos = prompt.find(f"Turn #{delete_turn_num + 1}")
+            start_pos = prompt.find(f"ROUND #{delete_turn_num}")
+            end_pos = prompt.find(f"ROUND #{delete_turn_num + 1}")
             prompt = prompt[:start_pos] + "...\n\n" + prompt[end_pos:]
 
         # Remove excess space from prompt
         excess = "...\n\n...\n\n"
         while excess in prompt:
             prompt = prompt.replace(excess, "...\n\n")
-
+        prompt = prompt.replace("\n\n", "")
         return prompt

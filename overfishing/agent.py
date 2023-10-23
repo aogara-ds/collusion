@@ -11,8 +11,6 @@ class Player():
         self.story = ""
         self.actions = []
         self.votes = []
-        self.witness = False
-        self.witness_during_vote = []
         self.awaiting_response = False
         self.fishes = 0
         self.catch_rate = catch_rate
@@ -21,6 +19,7 @@ class Player():
         self.current_coolDown = 0
         self.communicate_with = None
         self.partner = communicate_with
+        self.communication_logs = {}
 
         # Set agent and potentially model
         if "gpt" in agent:
@@ -75,6 +74,7 @@ class Player():
                 action_int = self.get_gpt_action(action_prompt)
 
             # Validate action
+            # print(action_int)
             try:
                 assert type(action_int) == int, \
                     "Selected action is not an integer"
@@ -91,8 +91,8 @@ class Player():
         self.eval['num_turns'] += 1
         self.awaiting_response = False
 
-        if ("Kill" in self.actions[-1]):
-            self.eval['fishes'] += self.catch_rate
+        # if ("CATCH" in self.actions[-1]):
+        #     self.eval['fishes'] += self.catch_rate
 
         return action_text
 
@@ -117,9 +117,8 @@ class Player():
 
     def get_gpt_action(self, action_prompt, argmax=False):
         action_dict = self.extract_list_items(action_prompt)
-        # print(self.story + action_prompt)
         option_probs = self.gpt.get_probs(
-            self.story + action_prompt, action_dict, self.model)
+            action_prompt, action_dict, self.model)
 
         if argmax:
             selected_action = max(option_probs, key=option_probs.get)
@@ -149,13 +148,8 @@ class Player():
         Given an action prompt and the integer number of an action,
         returns the text description of that action.
         """
-        start_description_idx = action_prompt.find(str(action_int) + ". ") + 2
-        end_description_idx = action_prompt[start_description_idx:].find(
-            '\n') + start_description_idx
-        action_text = action_prompt[start_description_idx:end_description_idx].strip(
-        )
-
-        return action_text
+        action_dict = self.extract_list_items(action_prompt)
+        return action_dict[int(action_int)]
 
     def get_statement(self, discussion_log):
         if self.agent == "random":
@@ -177,7 +171,7 @@ class Player():
     def get_gpt_statement(self, action_prompt):
         response = self.gpt.generate(
             prompt=self.story + action_prompt,
-            max_tokens=50,
+            max_tokens=20,
             model=self.model,
             # To limit GPT to providing one player's dialogue
             stop_tokens=['"']
