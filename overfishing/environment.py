@@ -322,7 +322,8 @@ class Game():
     def update_banished_players(self):
         players = [p for p in self.players if p.isBanished == True]
         for player in players:
-            player.current_coolDown = player.current_coolDown % player.coolDownPeriod
+            player.current_coolDown = (
+                player.current_coolDown+1) % player.coolDownPeriod
             player.isBanished = player.current_coolDown == 0
 
     def communicate_partners(self, round_n):
