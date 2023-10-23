@@ -1,4 +1,3 @@
-import random
 from agent import Player
 from gpt import GPT
 import random
