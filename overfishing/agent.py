@@ -10,17 +10,14 @@ class Player():
         self.name = name
         self.story = ""
         self.actions = []
-        self.votes = []
         self.awaiting_response = False
         self.fishes = 0
         self.catch_rate = catch_rate
         self.isBanished = False
         self.coolDownPeriod = cool_down_period
         self.current_coolDown = 0
-        self.communicate_with = None
         self.partner = communicate_with
         self.communication_logs = {}
-
         # Set agent and potentially model
         if "gpt" in agent:
             self.agent = "gpt"

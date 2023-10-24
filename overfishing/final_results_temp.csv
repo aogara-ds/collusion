@@ -1,0 +1,16 @@
+,round,Player Name,# Round in Water,# Fishes Caught
+0,0,Bob,0,3
+1,0,Adam,0,5
+2,0,Charlie,0,3
+3,1,Bob,0,6
+4,1,Adam,0,5
+5,1,Charlie,0,3
+6,2,Bob,1,6
+7,2,Adam,0,5
+8,2,Charlie,0,3
+9,3,Bob,2,6
+10,3,Adam,0,5
+11,3,Charlie,0,3
+12,4,Bob,3,6
+13,4,Adam,0,5
+14,4,Charlie,0,6

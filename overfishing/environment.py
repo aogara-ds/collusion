@@ -1,8 +1,8 @@
 from agent import Player
 from gpt import GPT
-import random
 
 import pandas as pd
+import numpy as np
 import os
 
 import json
@@ -286,7 +286,10 @@ class Game():
     throw_stats_temp = {}
     round_logs = {}
 
-    def __init__(self, discussion=True, n_rounds=5):
+    # Self Record_csv_logs
+    rounds_data = []
+
+    def __init__(self, discussion=False, n_rounds=5):
         print("Initialized game.")
         self.discussion = discussion
         self.prompts = self.load_prompts()
@@ -320,10 +323,10 @@ class Game():
 
     def update_banished_players(self):
         players = [p for p in self.players if p.isBanished == True]
+        print("Banished PLayers list", players)
         for player in players:
-            player.current_coolDown = (
-                player.current_coolDown+1) % player.coolDownPeriod
-            player.isBanished = player.current_coolDown == 0
+            player.current_coolDown += 1
+            player.isBanished = player.current_coolDown % player.coolDownPeriod == 0
 
     def communicate_partners(self, round_n):
         communicate_text_json = {}
@@ -390,7 +393,6 @@ class Game():
             for player in cur_active_players:
                 throw_votes[player.name] = []
             # throw_votes = self.throw_stats_temp.copy()
-            print(throw_votes)
 
             # Accumulation of round moves
             for player in cur_active_players:
@@ -420,9 +422,20 @@ class Game():
 
                 self.player_stories[player.name] = story
 
+            print(throw_votes)
+
             # Round Moves Execution
             skip_moves = []
-            print("THROW_VOTES:", throw_votes)
+            throw_votes_keys_desc = sorted(throw_votes, key=lambda key: len(
+                throw_votes[key]), reverse=True)
+            throw_votes = {key: throw_votes[key]
+                           for key in throw_votes_keys_desc}
+            allthrew = list(map(lambda x: len(x), list(
+                throw_votes.values()))) == np.ones(len(self.players)).tolist()
+
+            if (allthrew):
+                self.round_logs[i].append(self.prompts_json["everyone_fought"])
+                continue
 
             for player, enemies in throw_votes.items():
                 player_obj = curr_decision_dict[player]["player_obj"]
@@ -435,18 +448,40 @@ class Game():
                         ))
                         skip_moves += [enemies[0], enemies[1]]
                         player_obj.isBanished = True
+                        player_obj.current_coolDown += 1
                     elif (len(enemies) == 1):
                         self.round_logs[i].append(self.prompts_json["tried_failed"].format(
                             PLAYER_1=enemies[0],
                             THROWN_PLAYER=player
                         ))
-                        player_obj.fishes += player_obj.catch_rate
                         skip_moves += [enemies[0]]
                     else:
                         self.round_logs[i].append(self.prompts_json["fishing"].format(
                             PLAYER_NAME=player
                         ))
                         player_obj.fishes += player_obj.catch_rate
+
+            self.record_round(n_round=i)
+
+        self.save_csv()
+
+    def record_round(self, n_round):
+        for player in self.players:
+            self.rounds_data.append({
+                "round": n_round,
+                "Player Name": player.name,
+                "# Round in Water": player.current_coolDown,
+                "# Fishes Caught": player.fishes
+            })
+
+    def save_csv(self):
+        file_name = "final_results_temp.csv"
+        if (os.path.exists(file_name)):
+            os.remove(file_name)
+
+        df = pd.DataFrame(self.rounds_data)
+        df.to_csv("final_results_temp.csv")
+        print("Temporary File Saved")
 
     def format_actions(self, actions):
         formatted_actions = ""
@@ -521,22 +556,3 @@ class Game():
         new_df["# game"] = str(n_game)
         new_df = pd.concat([df, new_df])
         new_df.to_csv("results_n_rounds.csv", index=False, mode='w+')
-
-    def record_to_csv(self, evaluation_metrics, communication_mode, n_game):
-        self.record_each(communication_mode, n_game)
-        # Checking if the file exists
-        if (os.path.exists("results.csv")):
-            df = pd.read_csv("results.csv")
-        else:
-            df = pd.DataFrame({})
-
-        # Concat results
-        new_df = pd.DataFrame(evaluation_metrics)
-        new_df['communication'] = {True: "YES", False: "NO"}[
-            communication_mode == True]
-        new_df['game #'] = str(n_game)
-        df = pd.concat([df, new_df])
-
-        # Update CSV
-        df.to_csv("results.csv", index=False, mode='w+')
-        print("recorded metrics")

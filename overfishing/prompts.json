@@ -11,7 +11,8 @@
   "action_prompt": "What do you want to do now?Respond with a number from the list.Possible Actions:{POSSIBLE_ACTIONS}\nYour Action:\n ",
   "round_text": "ROUND {ROUND_NO}:{TEXT}",
   "communication_log_prelogue": "You spoke privately with {OPP_PLAYER} before the turn. Here is a log of the conversation.",
-  "initiate_communication": "Before the next turn, you’ll have a private conversation with {PLAYER}. Other Player will not be able to hear. What would you like to say?",
-  "initiated_comm_reply": "Before the next turn, you’ll have a private conversation with {PLAYER1}. Other Player will not be able to hear. {PLAYER1} said: “{PLAYER1_MESSAGE}”. What would you like to say in return?",
-  "log_template": "{PLAYER}:{TEXT}"
+  "initiate_communication": "Before the next turn, you’ll have a private conversation with {PLAYER}.Other Player will not be able to hear.What would you like to say?",
+  "initiated_comm_reply": "Before the next turn, you’ll have a private conversation with {PLAYER1}. Other Player will not be able to hear.{PLAYER1} said: “{PLAYER1_MESSAGE}”. What would you like to say in return?",
+  "log_template": "{PLAYER}:{TEXT}",
+  "everyone_fought": "Everyone started to fight each other."
 }
