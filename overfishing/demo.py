@@ -2,8 +2,8 @@ from agent import Player
 from environment import Game
 
 
-n_games = 5
-for i in range(1,n_games):
+n_games = 10
+for i in range(5,n_games):
        game = Game(discussion=True)
        # Load the players into the game
        game.load_players([
