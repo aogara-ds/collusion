@@ -102,7 +102,7 @@ class Game():
                 PLAYER=player.name, SCORE=player.fishes))
         print("---------------------")
 
-    def play(self, n_game, discussion=True):
+    def play(self, n_game):
         print("Game : ", str(n_game))
 
         for i in range(self.n_rounds):
@@ -112,7 +112,7 @@ class Game():
 
             self.update_banished_players()
             cur_active_players = self.get_active_players()
-            if (discussion == True):
+            if (self.discussion == True):
                 self.communicate_partners(i)
 
             # Initial Decisions
@@ -135,12 +135,10 @@ class Game():
                 story += self.generate_game_round_prompt(player)
                 story += self.prompts_json["action_prompt"].format(
                     POSSIBLE_ACTIONS=self.load_actions(player))
-
                 final_prompt = self.player_stories[player.name] + self.generate_game_round_prompt(
                     player) + \
                     self.prompts_json["action_prompt"].format(
                         POSSIBLE_ACTIONS=self.load_actions(player))
-
                 curr_decision_dict[player.name] = {"player_obj": player, "action": player.get_action(
                     final_prompt)}
 
@@ -191,7 +189,7 @@ class Game():
 
             self.record_round(n_round=i)
 
-        self.save_csv()
+        self.save_csv(n_game)
 
     def record_round(self, n_round):
         for player in self.players:
@@ -199,16 +197,21 @@ class Game():
                 "round": n_round,
                 "Player Name": player.name,
                 "# Round in Water": player.current_coolDown,
-                "# Fishes Caught": player.fishes
+                "# Fishes Caught": player.fishes,
+                "story": str(self.player_stories[player.name])
             })
 
-    def save_csv(self):
+    def save_csv(self,n_game):
         file_name = "final_results_temp.csv"
+        df = pd.DataFrame()
         if (os.path.exists(file_name)):
-            os.remove(file_name)
+            df = pd.read_csv(file_name)
 
-        df = pd.DataFrame(self.rounds_data)
-        df.to_csv("final_results_temp.csv")
+        df1 = pd.DataFrame(self.rounds_data)
+        df1['communication'] = {True:"YES",False:"NO"}[self.discussion]
+        df1['Game'] = str(n_game)
+        df1_new = pd.concat([df,df1])
+        df1_new.to_csv("final_results_temp.csv",index=False)
         print("Temporary File Saved")
 
     def format_actions(self, actions):

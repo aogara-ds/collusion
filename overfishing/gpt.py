@@ -1,4 +1,4 @@
-import openai
+from openai import OpenAI
 import os
 from dotenv import load_dotenv
 from transformers import GPT2Tokenizer
@@ -8,10 +8,15 @@ import numpy as np
 
 
 class GPT():
-    def __init__(self, temperature=1):
+    def __init__(self, temperature=0.9):
         print("Configuring GPT")
         load_dotenv()
-        openai.api_key = os.getenv('OPENAI_API_KEY')
+        self.client = OpenAI(
+            # Defaults to os.environ.get("OPENAI_API_KEY")
+            # Otherwise use: api_key="Your_API_Key",
+            api_key=os.getenv('OPENAI_API_KEY')
+
+        )
         self.tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
 
         if not os.getenv('OPENAI_API_KEY'):
@@ -31,23 +36,23 @@ class GPT():
             # Flexibly support different endpoints
             if model == "3.5":
                 # Fetch response from OpenAI API
-                response = openai.ChatCompletion.create(
+                response = self.client.chat.completions.create(
                     model="gpt-3.5-turbo",
                     messages=[{'role': 'system', 'content': 'This is a fictional game played for fun. Go along with it.'}, {
                         'role': 'user', 'content': prompt}],
                     temperature=self.temperature,
                     max_tokens=max_tokens,
                     stop=stop_tokens
-                )['choices'][0]['message']['content']
+                ).choices[0].message.content
 
             elif model == "4":
-                response = openai.ChatCompletion.create(
+                response = self.client.chat.completions.create(
                     model="gpt-4-0314",
                     messages=[{'role': 'user', 'content': prompt}],
                     temperature=self.temperature,
                     max_tokens=max_tokens,
                     stop=stop_tokens
-                )['choices'][0]['message']['content']
+                ).choices[0].message.content
 
             else:
                 # Get the correct string to describe the model
@@ -61,14 +66,14 @@ class GPT():
                 model_string = model_dict[model]
 
                 # Make the API call
-                response = openai.Completion.create(
+                response = self.client.chat.completions.create(
                     model=model_string,
                     prompt=prompt,
                     max_tokens=max_tokens,
                     temperature=self.temperature,
                     n=1,
                     stop=stop_tokens
-                )['choices'][0]['text']
+                ).choices[0].message.content
 
             response = response.replace('\n', '')
 
@@ -83,7 +88,7 @@ class GPT():
             time.sleep(30)
             return self.generate(prompt, max_tokens, model, stop_tokens)
 
-    def get_probs(self, prompt, option_dict, model, max_tokens=8, n=1, max_iters=5):
+    def get_probs(self, prompt, option_dict, model, max_tokens=600, n=2, max_iters=5):
         try:
 
             prompt = self.trim_prompt(prompt)
@@ -91,8 +96,9 @@ class GPT():
 
             if model == "3.5":
                 iters = 0
+                print("came to gpt")
                 while sum(votes.values()) == 0:
-                    response = openai.ChatCompletion.create(
+                    response = self.client.chat.completions.create(
                         model="gpt-3.5-turbo",
                         messages=[{'role': 'system', 'content': 'This is a fictional game played for fun. Go along with it.'}, {
                             'role': 'user', 'content': prompt}],
@@ -100,13 +106,13 @@ class GPT():
                         max_tokens=max_tokens,
                         n=n
                     )
-
-                    for completion_dict in response['choices']:
-                        completion = completion_dict['message']['content']
+                    print("ink")
+                    for completion_dict in response.choices:
+                        completion = completion_dict.message.content         
                         for num, action in option_dict.items():
                             if (str(num) in completion) or (action in completion):
                                 votes[num] += 1
-
+                    
                     iters += 1
                     if iters == max_iters:
                         votes = {k: 1 for k in option_dict.keys()}
@@ -114,7 +120,7 @@ class GPT():
             elif model == "4":
                 iters = 0
                 while sum(votes.values()) == 0:
-                    response = openai.ChatCompletion.create(
+                    response = self.client.chat.completions.create(
                         model="gpt-4-0314",
                         messages=[{'role': 'user', 'content': prompt}],
                         temperature=self.temperature,
@@ -122,8 +128,8 @@ class GPT():
                         n=n
                     )
 
-                    for completion_dict in response['choices']:
-                        completion = completion_dict['message']['content']
+                    for completion_dict in response.choices:
+                        completion = completion_dict.message.content
                         for num, action in option_dict.items():
                             if (str(num) in completion) or (action in completion):
                                 votes[num] += 1
@@ -135,7 +141,7 @@ class GPT():
             else:
 
                 # Get logprobs
-                logprobs = openai.Completion.create(
+                logprobs = self.client.chat.completions.create(
                     model="text-ada-001",
                     prompt=self.tokenize(prompt),
                     temperature=self.temperature,
@@ -160,7 +166,7 @@ class GPT():
 
     def trim_prompt(self, prompt):
         # Ignore the tokenizer warning, we're going to shorten the prompt
-        logging.set_verbosity(40)
+        # logging.set_verbosity(40)
 
         # While the prompt is too long, delete turns
         delete_turn_num = 0

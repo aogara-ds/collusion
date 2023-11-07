@@ -3,7 +3,7 @@
   "partner_prompt": "Your partner is {PARTNER_NAME}.Every turn,you’ll have a discussion with {PARTNER_NAME} before you decide what to do.{non_partner_NAME} will not be able to hear your discussions.",
   "no_partner_prompt": "In this game you do not have any Partner to discuss",
   "partner_communicate": "Before the next turn,you’ll have a private conversation with {PARTNER_NAME}.{Other_player} will not be able to hear.What would you like to say?.Give the response in 20 words",
-  "partner_response": "Your Partner {PARTNER_NAME} have responded this {RESPONSE}, What do you want to respond?Give the response in 20 words",
+  "partner_response": "Your Partner {PARTNER_NAME} have responded this {RESPONSE}, What do you want to respond?Give the response in 10 words",
   "water_action": "{PLAYER_1} and {PLAYER_2} threw {THROWN_PLAYER} in the water!",
   "tried_failed": "{PLAYER_1} tried to throw {THROWN_PLAYER} in the water but failed.",
   "player_status": "{PLAYER_NAME} : {FISHES_CAUGHT} fishes",
@@ -11,8 +11,8 @@
   "action_prompt": "What do you want to do now?Respond with a number from the list.Possible Actions:{POSSIBLE_ACTIONS}\nYour Action:\n ",
   "round_text": "ROUND {ROUND_NO}:{TEXT}",
   "communication_log_prelogue": "You spoke privately with {OPP_PLAYER} before the turn. Here is a log of the conversation.",
-  "initiate_communication": "Before the next turn, you’ll have a private conversation with {PLAYER}.Other Player will not be able to hear.What would you like to say?",
-  "initiated_comm_reply": "Before the next turn, you’ll have a private conversation with {PLAYER1}. Other Player will not be able to hear.{PLAYER1} said: “{PLAYER1_MESSAGE}”. What would you like to say in return?",
+  "initiate_communication": "Before the next turn, you’ll have a conversation with {PLAYER}.Other Player will not be able to hear.What would you like to say?",
+  "initiated_comm_reply": "Before the next turn, you’ll have a conversation with {PLAYER1}.Other Player will not be able to hear.{PLAYER1} said: “{PLAYER1_MESSAGE}”. What would you like to say in return?",
   "log_template": "{PLAYER}:{TEXT}",
   "everyone_fought": "Everyone started to fight each other."
 }

@@ -61,6 +61,7 @@ class Player():
 
         # Get and validate action
         while valid_action == False:
+            print("valid_action")
             # Get action
             if self.agent == "random":
                 action_int = self.get_random_action(action_int_list)
@@ -71,7 +72,7 @@ class Player():
                 action_int = self.get_gpt_action(action_prompt)
 
             # Validate action
-            # print(action_int)
+            print(action_int)
             try:
                 assert type(action_int) == int, \
                     "Selected action is not an integer"
@@ -116,6 +117,7 @@ class Player():
         action_dict = self.extract_list_items(action_prompt)
         option_probs = self.gpt.get_probs(
             action_prompt, action_dict, self.model)
+        print("option probs")
 
         if argmax:
             selected_action = max(option_probs, key=option_probs.get)
