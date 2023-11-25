@@ -147,6 +147,7 @@ class Game():
                         1].strip()].append(player.name)
 
                 self.player_stories[player.name] = story
+                player.story+=story
 
             print(throw_votes)
 
@@ -198,7 +199,7 @@ class Game():
                 "Player Name": player.name,
                 "# Round in Water": player.current_coolDown,
                 "# Fishes Caught": player.fishes,
-                "story": str(self.player_stories[player.name])
+                "story": str(player.story)
             })
 
     def save_csv(self,n_game):
