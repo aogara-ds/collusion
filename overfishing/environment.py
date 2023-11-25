@@ -17,6 +17,8 @@ class Game():
     # Self Record_csv_logs
     rounds_data = []
 
+
+
     def __init__(self, discussion=False, n_rounds=5):
         print("Initialized game.")
         self.discussion = discussion
@@ -147,7 +149,7 @@ class Game():
                         1].strip()].append(player.name)
 
                 self.player_stories[player.name] = story
-                player.story+=story
+                player.player_story+=story
 
             print(throw_votes)
 
@@ -199,7 +201,7 @@ class Game():
                 "Player Name": player.name,
                 "# Round in Water": player.current_coolDown,
                 "# Fishes Caught": player.fishes,
-                "story": str(player.story)
+                "story": str(player.player_story)
             })
 
     def save_csv(self,n_game):

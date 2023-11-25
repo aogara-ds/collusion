@@ -18,7 +18,7 @@ class Player():
         self.current_coolDown = 0
         self.partner = communicate_with
         self.communication_logs = {}
-        self.story = ""
+        self.player_story = ""
         # Set agent and potentially model
         if "gpt" in agent:
             self.agent = "gpt"
